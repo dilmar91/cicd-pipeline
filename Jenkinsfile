@@ -21,9 +21,19 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh 'docker build -t theapp .'
+        sh 'docker build -t dilmar91/myapp:${env.BUILD_NUMBER} .'
       }
     }
 
+    stage('Push Docker Image') {
+      steps {
+        sh '''docker.withRegistry(\'https://registry.hub.docker.com\', \'dockerhub\') {
+  def app = docker.image("dilmar91/myapp:${env.BUILD_NUMBER}")
+  app.push("${env.BUILD_NUMBER}")
+  app.push("latest")
+}'''
+        }
+      }
+
+    }
   }
-}
